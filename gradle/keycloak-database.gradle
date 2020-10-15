@@ -1,0 +1,8 @@
+
+def keycloak_root = 'C:\\projects\\kapow\\zebra\\keycloak\\keycloak-11.0.2'
+def keycloak_mysql_dir = "${keycloak_root}\\modules\\system\\layers\\keycloak\\com\\mysql\\main"
+
+task setup_database(type: Copy) {
+    from "libs/mysql-connector-java-5.1.26-bin.jar", "libs/module.xml"
+    into "${keycloak_mysql_dir}"
+}

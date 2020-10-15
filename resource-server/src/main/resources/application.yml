@@ -1,0 +1,11 @@
+
+server:
+  port: 9192
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://localhost:9191/auth/realms/kofax/protocol/openid-connect/certs
+

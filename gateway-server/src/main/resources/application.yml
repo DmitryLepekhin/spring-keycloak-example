@@ -1,0 +1,36 @@
+server:
+  port: 8080
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            client-id: kofax
+            client-secret: b9266bc9-5cf2-4d66-b479-b78e25544c0d
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/kofax"
+            scope: email,profile,offline_access,roles,openid
+            use-resource-role-mappings: true
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:9191/auth/realms/kofax
+  cloud:
+    gateway:
+      routes:
+        - id: rest_api
+          uri: http://localhost:9192
+          order: 1
+          predicates:
+            - Path=/api/**
+          filters:
+            - TokenRelay=
+            - RemoveRequestHeader=Cookie
+#            - TokenRelayWithTokenRefresh=
+#        - id: ui
+#          uri: http://localhost:4200/
+#          predicates:
+#            - Path=/**
+#          order: 2
+#          filters:
+#            - RewritePath=/ui/.*, /index.html
