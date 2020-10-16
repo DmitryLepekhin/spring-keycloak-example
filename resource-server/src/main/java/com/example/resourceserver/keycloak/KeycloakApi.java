@@ -2,10 +2,9 @@ package com.example.resourceserver.keycloak;
 
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
-import org.keycloak.representations.idm.CredentialRepresentation;
-import org.keycloak.representations.idm.RoleRepresentation;
-import org.keycloak.representations.idm.UserRepresentation;
+import org.keycloak.representations.idm.*;
 
+import javax.ws.rs.core.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +19,7 @@ public class KeycloakApi {
                 "http://localhost:9191/auth",
                 "master",
                 "admin",
-                "admin",
+                "adminadmin",
                 "admin-cli");
         realm = keycloak.realm("kofax");
     }
@@ -40,7 +39,7 @@ public class KeycloakApi {
         return realm.users().list();
     }
 
-    public void createUser(String name, String password) {
+    public UserRepresentation newUser(String name, String password) {
         UserRepresentation user = new UserRepresentation();
         user.setId(name);
         user.setUsername(name);
@@ -57,8 +56,11 @@ public class KeycloakApi {
         credentials.add(credential);
 
         user.setEnabled(true);
+        return user;
+    }
 
-        realm.users().create(user);
+    public void createUser(String name, String password) {
+        realm.users().create(newUser(name, password));
     }
 
     public void mapUserRole(String username, String roleId) {
@@ -88,5 +90,14 @@ public class KeycloakApi {
                     r -> roleId.equals(r.getName())
                 )
                 .collect(Collectors.toList());
+    }
+
+    public RealmRepresentation exportRealm() {
+
+        return realm.partialExport(true, true);
+    }
+
+    public Response importRealm(PartialImportRepresentation representation) {
+        return realm.partialImport(representation);
     }
 }
