@@ -3,8 +3,10 @@ package com.example.resourceserver.keycloak;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.*;
+import org.keycloak.util.JsonSerialization;
 
 import javax.ws.rs.core.*;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,7 +21,7 @@ public class KeycloakApi {
                 "http://localhost:9191/auth",
                 "master",
                 "admin",
-                "adminadmin",
+                "admin",
                 "admin-cli");
         realm = keycloak.realm("kofax");
     }
@@ -100,4 +102,29 @@ public class KeycloakApi {
     public Response importRealm(PartialImportRepresentation representation) {
         return realm.partialImport(representation);
     }
+
+    public static <T> T loadJson(InputStream is, Class<T> type) {
+        try {
+            return JsonSerialization.readValue(is, type);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to parse json", e);
+        }
+    }
+
+    public void saveToJson(String fileName, RealmRepresentation representation)
+            throws IOException {
+        File file = new File(fileName);
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
+
+        JsonSerialization.writeValueToStream(fileOutputStream, representation);
+        fileOutputStream.close();
+    }
+
+    public RealmRepresentation createRealmFromJson(String fileName) throws IOException {
+        FileInputStream is = new FileInputStream(fileName);
+        return loadJson(is, RealmRepresentation.class);
+
+    }
+
+
 }
