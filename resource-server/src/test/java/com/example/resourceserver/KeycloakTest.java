@@ -1,34 +1,47 @@
 package com.example.resourceserver;
 
+import com.example.resourceserver.config.KeycloakProperties;
 import com.example.resourceserver.keycloak.KeycloakApi;
+import com.example.resourceserver.keycloak.KeycloakApiService;
 import org.junit.jupiter.api.Test;
-import org.keycloak.representations.idm.*;
+import org.keycloak.representations.idm.PartialImportRepresentation;
+import org.keycloak.representations.idm.RealmRepresentation;
+import org.keycloak.representations.idm.UserRepresentation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-import javax.ws.rs.core.*;
-import java.io.*;
-import java.security.*;
-import java.util.*;
+import javax.ws.rs.core.Response;
+import java.io.IOException;
+import java.util.List;
 
+@SpringBootTest
 public class KeycloakTest {
+
+    @Autowired
+    private KeycloakApiService apiService;
+
+    @Autowired
+    private KeycloakProperties props;
+
     @Test
     public void test_createUser() {
-        KeycloakApi api = new KeycloakApi();
+        KeycloakApi api = apiService.getApi();
         api.createUser("test", "test");
     }
 
     @Test
     public void test_createUserAndRole_andMap() {
-        KeycloakApi api = new KeycloakApi();
+        KeycloakApi api = apiService.getApi();
 
         String role = "testers";
         String username = "test";
         String password = "test";
 
         // create role
-//        api.createRealmRoles(role);
+        api.createRealmRoles(role);
 
         // create user
-//        api.createUser(username, password);
+        api.createUser(username, password);
 
         // map user to role
         api.mapUserRole(username, role);
@@ -37,7 +50,7 @@ public class KeycloakTest {
 
     @Test
     public void test_exportImport() {
-        KeycloakApi api = new KeycloakApi();
+        KeycloakApi api = apiService.getApi();
 
         UserRepresentation user = api.newUser("importedUser", "importedUser");
 
@@ -60,12 +73,12 @@ public class KeycloakTest {
     }
 
     @Test void test_export() {
-        KeycloakApi api = new KeycloakApi();
+        KeycloakApi api = apiService.getApi();
 
         RealmRepresentation realm = api.exportRealm();
 
         try {
-            api.saveToJson("/Users/olcha/work/keycloak/testrealm.json", realm);
+            api.saveToJson(props.getOutputDir() + "testrealm.json", realm);
         }
         catch (IOException e) {
             System.out.println("Can't export representation to file");
@@ -73,10 +86,10 @@ public class KeycloakTest {
     }
 
     @Test void test_import() {
-        KeycloakApi api = new KeycloakApi();
+        KeycloakApi api = apiService.getApi();
 
         try {
-            RealmRepresentation realm = api.createRealmFromJson("/Users/olcha/work/keycloak/testrealm.json");
+            RealmRepresentation realm = api.createRealmFromJson(props.getOutputDir() + "testrealm.json");
             PartialImportRepresentation representation = new PartialImportRepresentation();
 
             UserRepresentation user = api.newUser("importedUser2", "importedUser2");

@@ -16,6 +16,11 @@ public class ApiController {
         System.out.println(authentication);
     }
 
+    @GetMapping("/admin")
+    public void access(Authentication authentication) {
+        System.out.println(authentication);
+    }
+
     @PutMapping("/group")
     public void createGroup(GroupDto dto) {
         // ToDo: call KeycloakApi here

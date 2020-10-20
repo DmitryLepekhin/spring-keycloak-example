@@ -1,5 +1,6 @@
 package com.example.resourceserver.keycloak;
 
+import com.example.resourceserver.config.KeycloakProperties;
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.admin.client.resource.RealmResource;
 import org.keycloak.representations.idm.*;
@@ -13,17 +14,17 @@ import java.util.stream.Collectors;
 
 public class KeycloakApi {
 
-    private final Keycloak keycloak;
-    private final RealmResource realm;
+    private Keycloak keycloak;
+    private RealmResource realm;
 
-    public KeycloakApi() {
+    public KeycloakApi(KeycloakProperties props) {
         keycloak = Keycloak.getInstance(
-                "http://localhost:9191/auth",
-                "master",
-                "admin",
-                "admin",
-                "admin-cli");
-        realm = keycloak.realm("kofax");
+                props.getKeycloakUrl(),
+                props.getAdminRealm(),
+                props.getUsername(),
+                props.getPassword(),
+                props.getAdminCliendId());
+        realm = keycloak.realm(props.getRealm());
     }
 
     public List<RoleRepresentation> getRealmRoles() {

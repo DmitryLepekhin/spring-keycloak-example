@@ -9,3 +9,13 @@ spring:
         jwt:
           jwk-set-uri: http://localhost:9191/auth/realms/kofax/protocol/openid-connect/certs
 
+kofax:
+  local:
+    keycloakUrl: http://localhost:9191/auth
+    adminRealm: master
+    username: admin
+    password: admin
+    adminCliendId: admin-cli
+    realm: demo
+    outputDir: C:\\KapowWork\\
+

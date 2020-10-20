@@ -1,3 +1,6 @@
+### Spring + Keycloak example
+
+The readme describes initial setup of the Keycloak server for the project.
 
 #### Database setup
 
